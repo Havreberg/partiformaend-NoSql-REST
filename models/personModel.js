@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const personSchema = new mongoose.Schema({
-    navn: {
+    name: {
         type: String,
         required: true,
     },
-    parti: {
+    party: {
         type: String,
         required: true,
     },
@@ -13,9 +13,9 @@ const personSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    startdato: {
-        type: String,
-        required: true,
+    startDate: {
+        type: Date,
+        required: false,
     }
 });
 
