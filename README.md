@@ -20,7 +20,7 @@ MongoDB - Gemmer data
 
 - Hvorfor ikke et service lag?
 
-Ikke nok forretting at skulle lave validering på, personModel bruger required til at bestemme hvad databasen gerne vil modtage, resten tager personController med validateError.
+Ikke nok forrettings logic at lave validering på, personModel bruger required til at bestemme hvad databasen gerne vil modtage, resten tager personController med validateError.
 
 CRUD test med Postman
 
