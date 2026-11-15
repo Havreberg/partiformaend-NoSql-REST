@@ -1,20 +1,26 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const personRoutes = require("./routes/personRoutes");
+const logger = require("./middleware/logger");
 
 const app = express();
-const PORT = 3000;
+
+const PORT = process.env.PORT || 3000;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 // Middleware
+app.use(logger)
 app.use(express.json());
 
 // Routes
-app.use("/person", personRoutes);
+app.use("/medlemmer", personRoutes);
 
 // MongoDB connection
 async function startServer() {
     try {
-        await mongoose.connect("mongodb://127.0.0.1:27017/person");
+        await mongoose.connect(MONGODB_URI);
 
         console.log("Connected to MongoDB!");
 

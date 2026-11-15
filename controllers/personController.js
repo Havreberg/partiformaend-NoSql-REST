@@ -1,13 +1,38 @@
 const person = require("../models/personModel");
+const validateError = require("../middleware/validateError");
 
 async function getPerson(req, res) {
     try {
-        const persons = await person.find(undefined, undefined, undefined);
+        const persons = await person.find();
 
         return res.status(200).json(persons);
     } catch (error) {
         return res.status(500).json({
-            message: "Could not fetch persons"
+            message: "Serverfejl"
+        });
+    }
+}
+
+async function getMinister(req, res) {
+    try {
+        const ministers = await person.find({ position: "minister" });
+
+        return res.status(200).json(ministers);
+    } catch (error) {
+        return res.status(500).json({
+            message: "Serverfejl"
+        });
+    }
+}
+
+async function getChairPeople(req, res) {
+    try {
+        const chairPeople = await person.find({ position: "formand" });
+
+        return res.status(200).json(chairPeople);
+    } catch (error) {
+        return res.status(500).json({
+            message: "Serverfejl"
         });
     }
 }
@@ -18,20 +43,23 @@ async function getPersonById(req, res) {
 
         if (!personById) {
             return res.status(404).json({
-                message: "Person not found"
+                message: "Kunne ikke finde person:"
             });
         }
         return res.status(200).json(personById);
 
     } catch (error) {
-        if (error.message) {
-            return res.status(400).json({
-                error: error.message
-            });
+        const messages = {
+            invalidId: "Id'et på personen er ugyldigt:.",
+            invalidData: "Personens oplysninger er ugyldige:"
+        };
+
+        if (validateError(error, res, messages)) {
+            return;
         }
 
         return res.status(500).json({
-            message: "Could not fetch person"
+            message: "Serverfejl"
         });
     }
 }
@@ -41,78 +69,94 @@ async function createPerson(req, res) {
         const newPerson = await person.create(req.body);
 
         res.status(201).json(newPerson);
-    } catch (error) {
-        console.error("Error creating person:", error.message);
 
-        if (error.message) {
-            return res.status(400).json({
-                error: error.message
-            });
+    } catch (error) {
+        const messages = {
+            invalidData: "Kunne ikke opret person:"
+        };
+
+        if (validateError(error, res, messages)) {
+            return;
         }
 
         res.status(500).json({
-            error: "Could not create person"
+            message: "serverfejl"
         });
     }
 }
 
 async function updatePerson(req, res){
     try {
-        const updatePerson = await person.findByIdAndUpdate(
+        const updatedPerson = await person.findByIdAndUpdate(
             req.params.id,
             req.body,
             {
-                returnDocument: "after", runValidators: true
+                returnDocument: "after",
+                runValidators: true
             }
         );
-        if (!updatePerson) {
+
+        if (!updatedPerson) {
             return res.status(404).json({
-                error: "Person not found"
+                message: "Person blev ikke fundet:"
             });
         }
-        res.status(200).json(updatePerson);
+
+        res.status(200).json(updatedPerson);
 
         } catch (error) {
-            if (error.message) {
-                return res.status(400).json({
-                    error: error.message
-                });
-            }
+        const messages = {
+            invalidId: "Id'et på personen er ugyldigt:",
+            invalidData: "Personens oplysninger er ugyldige:"
+        };
+
+        if (validateError(error, res, messages)) {
+            return;
+        }
 
         return res.status(500).json({
-            message: "Could not update person"
+            message: "Serverfejl"
         });
     }
 }
 
 async function deletePerson(req, res) {
     try {
-        const deletePerson = await person.findByIdAndDelete(req.params.id);
+        const deletedPerson = await person.findByIdAndDelete(req.params.id);
 
-        if (!deletePerson) {
+        if (!deletedPerson) {
             return res.status(404).json({
-                error: "Person not found"
+                message: "Person blev ikke fundet"
             });
         }
 
         res.status(200).json({
-            message: "Deleted person successfully",
-            person: deletePerson
+            message: "Slettelsen af person var succes:",
+            person: deletedPerson
         });
 
     } catch (error) {
-        if (error.message) {
-            return res.status(400).json({
-                error: error.message
-            });
+        const messages = {
+            invalidId: "Id'et på personen er ugyldigt:.",
+            invalidData: "Personens oplysninger er ugyldige:"
+        };
+
+        if (validateError(error, res, messages)) {
+            return;
         }
 
         return res.status(500).json({
-            message: "Could not delete person"
+            message: "Serverfejl"
         })
     }
 }
 
-
-
-module.exports = { getPerson, getPersonById, createPerson, updatePerson, deletePerson };
+module.exports = {
+    getPerson,
+    getMinister,
+    getChairPeople,
+    getPersonById,
+    createPerson,
+    updatePerson,
+    deletePerson
+};
