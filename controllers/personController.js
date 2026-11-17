@@ -1,154 +1,38 @@
-const person = require("../models/personModel");
-const validateError = require("../middleware/validateError");
+const personService = require("../services/personService");
 
 async function getPerson(req, res) {
-    try {
-        const persons = await person.find();
-
-        return res.status(200).json(persons);
-    } catch (error) {
-        return res.status(500).json({
-            message: "Serverfejl"
-        });
-    }
+    const findPeople = await personService.getPerson()
+    return res.status(200).json(findPeople);
 }
 
 async function getMinister(req, res) {
-    try {
-        const ministers = await person.find({ position: "minister" });
-
-        return res.status(200).json(ministers);
-    } catch (error) {
-        return res.status(500).json({
-            message: "Serverfejl"
-        });
-    }
+    const findMinisters = await personService.getMinisters();
+    return res.status(200).json(findMinisters);
 }
 
 async function getChairPeople(req, res) {
-    try {
-        const chairPeople = await person.find({ position: "formand" });
-
-        return res.status(200).json(chairPeople);
-    } catch (error) {
-        return res.status(500).json({
-            message: "Serverfejl"
-        });
-    }
+    const findChairPeople = await personService.getChairPeople();
+    return res.status(200).json(findChairPeople);
 }
 
 async function getPersonById(req, res) {
-    try {
-        const personById = await person.findById(req.params.id);
-
-        if (!personById) {
-            return res.status(404).json({
-                message: "Kunne ikke finde person:"
-            });
-        }
-        return res.status(200).json(personById);
-
-    } catch (error) {
-        const messages = {
-            invalidId: "Id'et på personen er ugyldigt:.",
-            invalidData: "Personens oplysninger er ugyldige:"
-        };
-
-        if (validateError(error, res, messages)) {
-            return;
-        }
-
-        return res.status(500).json({
-            message: "Serverfejl"
-        });
-    }
+    const findPersonById = await personService.getPersonById(req.params.id);
+    return res.status(200).json(findPersonById);
 }
 
 async function createPerson(req, res) {
-    try {
-        const newPerson = await person.create(req.body);
-
-        res.status(201).json(newPerson);
-
-    } catch (error) {
-        const messages = {
-            invalidData: "Kunne ikke opret person:"
-        };
-
-        if (validateError(error, res, messages)) {
-            return;
-        }
-
-        res.status(500).json({
-            message: "serverfejl"
-        });
-    }
+    const createPerson = await personService.createPerson(req.body);
+    return res.status(201).json(createPerson);
 }
 
 async function updatePerson(req, res){
-    try {
-        const updatedPerson = await person.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            {
-                returnDocument: "after",
-                runValidators: true
-            }
-        );
-
-        if (!updatedPerson) {
-            return res.status(404).json({
-                message: "Person blev ikke fundet:"
-            });
-        }
-
-        res.status(200).json(updatedPerson);
-
-        } catch (error) {
-        const messages = {
-            invalidId: "Id'et på personen er ugyldigt:",
-            invalidData: "Personens oplysninger er ugyldige:"
-        };
-
-        if (validateError(error, res, messages)) {
-            return;
-        }
-
-        return res.status(500).json({
-            message: "Serverfejl"
-        });
-    }
+    const updatedPerson = await personService.updatePerson(req.params.id, req.body);
+    return res.status(200).json(updatedPerson);
 }
 
 async function deletePerson(req, res) {
-    try {
-        const deletedPerson = await person.findByIdAndDelete(req.params.id);
-
-        if (!deletedPerson) {
-            return res.status(404).json({
-                message: "Person blev ikke fundet"
-            });
-        }
-
-        res.status(200).json({
-            message: "Slettelsen af person var succes:",
-            person: deletedPerson
-        });
-
-    } catch (error) {
-        const messages = {
-            invalidId: "Id'et på personen er ugyldigt:.",
-            invalidData: "Personens oplysninger er ugyldige:"
-        };
-
-        if (validateError(error, res, messages)) {
-            return;
-        }
-
-        return res.status(500).json({
-            message: "Serverfejl"
-        })
-    }
+    const deletedPerson = await personService.deletePerson(req.params.id);
+    return res.status(200).json(deletedPerson);
 }
 
 module.exports = {

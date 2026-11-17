@@ -1,4 +1,6 @@
 const express = require("express");
+const validateBody = require("../middleware/validateBody");
+const { personSchema } = require("../schemas/personSchema");
 const router = express.Router();
 
 const {
@@ -15,8 +17,8 @@ router.get("/", getPerson);
 router.get("/minister", getMinister);
 router.get("/formand", getChairPeople);
 router.get("/:id", getPersonById);
-router.post("/", createPerson);
-router.put("/:id", updatePerson);
+router.post("/",validateBody(personSchema), createPerson);
+router.put("/:id", validateBody(personSchema), updatePerson);
 router.delete("/:id", deletePerson);
 
 module.exports = router;
