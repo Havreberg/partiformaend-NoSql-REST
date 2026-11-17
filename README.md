@@ -1,88 +1,84 @@
-![img.png](Billeder/Diagram/img.png)
+Struktur
 
-Diagram oversigt
+Postman / Client
 
-- Overvejlser af sruktur
+↓
 
-  MVC-inspireret, 
+app.js
 
-app.js - Opsætter Express og middleware
+↓
 
-logger.js, validateError.js - Logger og validerer requests
+logger.js
 
-personRoutes.js - Bestemmer hvilket endpoint der kaldes
+↓
 
-personController.js - Håndterer requests og responses
+personRoutes.js
 
-personModel.js - Definerer datastruktur og bruger Mongoose
+↓
+POST / PUT
+← ──────────────┘
+validateBody.js 
 
-MongoDB - Gemmer data
+↑
 
-- Hvorfor ikke et service lag?
+personSchema.js (Joi)
 
-Ikke nok forrettings logic at lave validering på, personModel bruger required til at bestemme hvad databasen gerne vil modtage, resten tager personController med validateError.
+↓
 
-CRUD test med Postman
+personController.js
 
-GET / Person
+↓
 
-200
+personService.js
 
-![img.png](Billeder/Postman/img.png)
+↓
 
-GET / Ministers
+personModel.js (Mongoose)
 
-200
+↓
 
-![img_1.png](Billeder/Postman/img_1.png)
+MongoDB
 
-GET / formand
+- Controlleren taler direkte med Mongoose-modellen, og hver controller håndterer typisk sine egne fejl.
 
-200
+success -flowet
 
-![img_2.png](Billeder/Postman/img_2.png)
+MongoDB → personModel → personService → personController → Postman
 
-GET / id
+Fejl-flowet
 
-200
+Joi / Controller / Service / Mongoose
 
-![img_11.png](Billeder/Postman/img_11.png)
+↓
 
-POST / 
+Express 5 sender fejlen videre
 
-400
-![img_3.png](Billeder/Postman/img_3.png)
+↓
 
-201
+errorHandler.js
 
-![img_4.png](Billeder/Postman/img_4.png)
+↓
 
-PUT / id
+Postman / Client
 
-Id ikke findes / 400
+app.js indlæser logger, routeren og errorHandler.
 
-![img_5.png](Billeder/Postman/img_5.png)
+personRoutes.js vælger controller-funktion og sætter validateBody på POST og PUT.
 
-400
-![img_6.png](Billeder/Postman/img_6.png)
+validateBody.js bruger personSchema.js til at kontrollere req.body, før controlleren rammes.
 
-200
+personController.js håndterer kun HTTP: req, res og status som 200 eller 201.
 
-![img_7.png](Billeder/Postman/img_7.png)
+personService.js udfører databaseoperationerne og afgør fx, om en manglende person skal blive til en 404.
 
-DELETE / id
+personModel.js beskriver MongoDB-dokumentets felter og er den eneste fil, der kommunikerer med 
+Mongoose/MongoDB.
 
-Id ikke findes / 400
+errorHandler.js gør alle fejl til ens JSON-svar.
 
-![img_8.png](Billeder/Postman/img_8.png)
+vigtigste nye princip
 
-200
-
-![img_9.png](Billeder/Postman/img_9.png)
-
-Database
-
-![img_10.png](Billeder/Postman/img_10.png)
+Controller → Service → Model
 
 
 

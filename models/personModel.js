@@ -14,12 +14,9 @@ const personSchema = new mongoose.Schema({
     position: {
         type: String,
         required: [true, "Position skal udfyldes."],
-        enum: {
-            values: ["minister", "formand"],
-            message: "Position skal være enten minister eller formand"
-        },
-        trim: true,
-        lowercase: true
+        enum: ["minister", "formand"],
+        lowercase: true,
+        trim: true
     },
     startDate: {
         type: Date,
@@ -28,4 +25,5 @@ const personSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("person", personSchema);
+
 

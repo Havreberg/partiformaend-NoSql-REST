@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const personRoutes = require("./routes/personRoutes");
 const logger = require("./middleware/logger");
+const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 
 // Routes
 app.use("/medlemmer", personRoutes);
+app.use(errorHandler);
 
 // MongoDB connection
 async function startServer() {
